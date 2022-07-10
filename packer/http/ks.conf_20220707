@@ -1,0 +1,69 @@
+#eula --agreed
+lang en-US.UTF-8
+keyboard --vckeymap='de' --xlayouts='de'
+timezone Europe/Berlin
+
+text
+#install
+#cdrom
+#skipx
+firstboot --disable
+
+#url --url="http://mirror.centos.org/centos/8.3.2011/BaseOS/x86_64/os/"
+rootpw --plaintext centos
+
+firewall --enabled --ssh
+selinux --enforcing
+
+#inst.repo --name="base" --baseurl=https://mirror.netsite.dk/epel/8/Everything/x86_64/
+repo --name="AppStream" --baseurl=file:///run/install/repo/AppStream
+#repo --name "CentOS 8 AppStream" --baseurl=file:///run/install/repo/AppStream/
+#repo --name "CentOS 8 BaseOS"    --baseurl=file:///run/install/repo/BaseOS/
+
+#repo --name="appstream" --mirrorlist=http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=AppStream&infra=$infra
+#repo --name="baseos" --mirrorlist=http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=BaseOS&infra=$infra
+#repo --name="EPEL" --metalink=https://mirrors.fedoraproject.org/metalink?repo=epel-$releasever&arch=$basearch&infra=$infra&content=$contentdir
+
+# Installation logging level
+logging --level=debug
+
+#network  --bootproto=dhcp --device=eth0 --onboot=on
+network --device ens18 --onboot yes --bootproto dhcp --activate --noipv6 --hostname=centos8-packer
+
+# System bootloader configuration
+bootloader --location=mbr
+zerombr
+clearpart --all
+
+# Disk partitioning information
+part / --asprimary --fstype="ext4" --size=1024 --grow
+
+%addon com_redhat_kdump --disable
+%end
+
+
+%packages --ignoremissing --excludedocs
+sudo
+
+
+# unnecessary firmware
+-aic94xx-firmware*
+-alsa-*
+-ivtv-*
+-iwl*firmware
+-alsa-tools-firmware
+-alsa-lib
+-btrfs-progs
+-kexec-tools
+-ModemManager-glib
+-NetworkManager-tui
+-postfix
+-wpa_supplicant
+-cronie
+-parted
+-xkeyboard-config
+-plymouth
+%end
+
+# Reboot after installation
+reboot --eject
